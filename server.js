@@ -23,6 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// getTimers
 app.get('/api/timers', (req, res) => {
   fs.readFile(DATA_FILE, (err, data) => {
     res.setHeader('Cache-Control', 'no-cache');
@@ -30,6 +31,7 @@ app.get('/api/timers', (req, res) => {
   });
 });
 
+// createTimer
 app.post('/api/timers', (req, res) => {
   fs.readFile(DATA_FILE, (err, data) => {
     const timers = JSON.parse(data);
@@ -48,36 +50,7 @@ app.post('/api/timers', (req, res) => {
   });
 });
 
-app.post('/api/timers/start', (req, res) => {
-  fs.readFile(DATA_FILE, (err, data) => {
-    const timers = JSON.parse(data);
-    timers.forEach((timer) => {
-      if (timer.id === req.body.id) {
-        timer.runningSince = req.body.start;
-      }
-    });
-    fs.writeFile(DATA_FILE, JSON.stringify(timers, null, 4), () => {
-      res.json({});
-    });
-  });
-});
-
-app.post('/api/timers/stop', (req, res) => {
-  fs.readFile(DATA_FILE, (err, data) => {
-    const timers = JSON.parse(data);
-    timers.forEach((timer) => {
-      if (timer.id === req.body.id) {
-        const delta = req.body.stop - timer.runningSince;
-        timer.elapsed += delta;
-        timer.runningSince = null;
-      }
-    });
-    fs.writeFile(DATA_FILE, JSON.stringify(timers, null, 4), () => {
-      res.json({});
-    });
-  });
-});
-
+// updateTimer
 app.put('/api/timers', (req, res) => {
   fs.readFile(DATA_FILE, (err, data) => {
     const timers = JSON.parse(data);
@@ -93,6 +66,7 @@ app.put('/api/timers', (req, res) => {
   });
 });
 
+// deleteTimer
 app.delete('/api/timers', (req, res) => {
   fs.readFile(DATA_FILE, (err, data) => {
     let timers = JSON.parse(data);
@@ -103,6 +77,38 @@ app.delete('/api/timers', (req, res) => {
         return memo.concat(timer);
       }
     }, []);
+    fs.writeFile(DATA_FILE, JSON.stringify(timers, null, 4), () => {
+      res.json({});
+    });
+  });
+});
+
+// startTimer
+app.post('/api/timers/start', (req, res) => {
+  fs.readFile(DATA_FILE, (err, data) => {
+    const timers = JSON.parse(data);
+    timers.forEach((timer) => {
+      if (timer.id === req.body.id) {
+        timer.runningSince = req.body.start;
+      }
+    });
+    fs.writeFile(DATA_FILE, JSON.stringify(timers, null, 4), () => {
+      res.json({});
+    });
+  });
+});
+
+// stopTimer
+app.post('/api/timers/stop', (req, res) => {
+  fs.readFile(DATA_FILE, (err, data) => {
+    const timers = JSON.parse(data);
+    timers.forEach((timer) => {
+      if (timer.id === req.body.id) {
+        const delta = req.body.stop - timer.runningSince;
+        timer.elapsed += delta;
+        timer.runningSince = null;
+      }
+    });
     fs.writeFile(DATA_FILE, JSON.stringify(timers, null, 4), () => {
       res.json({});
     });

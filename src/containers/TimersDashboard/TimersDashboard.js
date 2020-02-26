@@ -16,9 +16,9 @@ class TimersDashboard extends Component {
   }
 
   loadTimersFromServer = () => {
-    getTimers((serverTimers) => (
+    getTimers((serverTimers) => {
         this.setState({ timers: serverTimers })
-      )
+      }
     );
   };
 
