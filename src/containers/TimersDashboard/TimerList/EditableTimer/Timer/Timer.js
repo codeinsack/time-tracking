@@ -4,12 +4,16 @@ import TimerActionButton from "./TimerActionButton"
 import { renderElapsedString } from "../../../../../utils"
 
 class Timer extends Component {
-  componentDidMount() {
-    this.forceUpdateInterval = setInterval(() => this.forceUpdate(), 50);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.forceUpdateInterval);
+  componentDidUpdate() {
+    const { runningSince } = this.props;
+    if (runningSince) {
+      this.forceUpdateInterval = setTimeout(() => {
+        clearInterval(this.forceUpdateInterval);
+        this.forceUpdate()
+      }, 1000);
+    } else {
+      clearInterval(this.forceUpdateInterval);
+    }
   }
 
   handleStartClick = () => {
@@ -29,6 +33,7 @@ class Timer extends Component {
 
   render() {
     const { elapsed, runningSince, title, project, onEditClick } = this.props
+    console.log('elapsed', elapsed);
 
     const elapsedString = renderElapsedString(elapsed, runningSince)
     return (
